@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matematika 🧮 – Tobík a Timča</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1d3557;
+    --accent: #ff8c42;
+    --accent2: #3d7dd8;
+    --good: #2e9e63;
+    --bad: #e05555;
+    --card: #ffffff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    min-height: 100vh;
+    font-family: 'Nunito', sans-serif;
+    color: var(--ink);
+    /* rozcestník matiky = světle zelená */
+    background: linear-gradient(180deg, #b5e6bd 0%, #d8f3dc 45%, #f0fbf2 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 18px 16px 40px;
+  }
+  /* Tobíkova kategorie = světle modrá */
+  body.k-tobik { background: linear-gradient(180deg, #aed6fa 0%, #d2e8fd 45%, #eef7ff 100%); }
+  /* Timčina kategorie = světle růžová */
+  body.k-timca { background: linear-gradient(180deg, #fac4da 0%, #fde0ec 45%, #fff4f9 100%); }
+
+  header {
+    width: 100%; max-width: 760px;
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  }
+  header a, header button.nav {
+    text-decoration: none; color: var(--ink); font-weight: 900;
+    background: #fff; padding: 8px 14px; border-radius: 999px; border: none;
+    box-shadow: 0 2px 8px rgba(29,53,87,.2); font-size: .9rem;
+    cursor: pointer; font-family: inherit;
+  }
+  header h1 { font-size: 1.5rem; font-weight: 900; text-shadow: 0 1px 0 rgba(255,255,255,.5); }
+  .spacer { flex: 1; }
+  .stats { display: flex; gap: 12px; font-weight: 900; font-size: 1rem; }
+  .stats span b { color: #fff; background: var(--accent); border-radius: 999px; padding: 2px 10px; }
+
+  /* ---------- výběr dítěte ---------- */
+  #who {
+    margin-top: 60px;
+    display: flex; gap: 28px; flex-wrap: wrap; justify-content: center;
+  }
+  .kid {
+    font-family: inherit; cursor: pointer;
+    width: 260px; padding: 40px 20px; text-align: center;
+    background: var(--card); border-radius: 28px; border: 4px solid transparent;
+    box-shadow: 0 12px 30px rgba(29,53,87,.25);
+    transition: transform .18s;
+  }
+  .kid:hover { transform: translateY(-8px) scale(1.04); }
+  .kid .face { font-size: 4.6rem; display: block; }
+  .kid h2 { font-size: 1.8rem; font-weight: 900; margin-top: 10px; }
+  .kid p { font-size: .9rem; font-weight: 700; color: #4a6280; margin-top: 6px; }
+  .kid.tobik { border-color: #3d7dd8; }
+  .kid.timca { border-color: #e884b0; }
+
+  /* ---------- výběr režimu ---------- */
+  #modes {
+    display: none;
+    margin-top: 26px; width: 100%; max-width: 760px;
+  }
+  #modes h2 { text-align: center; font-weight: 900; font-size: 1.3rem; text-shadow: 0 1px 0 rgba(255,255,255,.5); }
+  .mode-grid {
+    margin-top: 16px;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px;
+  }
+  .mode-card {
+    background: var(--card); border: 3px solid transparent; border-radius: 20px;
+    padding: 20px 14px; text-align: center; cursor: pointer;
+    box-shadow: 0 6px 18px rgba(29,53,87,.18);
+    transition: transform .15s;
+    font-family: inherit; color: var(--ink);
+  }
+  .mode-card:hover { transform: translateY(-4px); border-color: var(--accent2); }
+  .mode-card .emoji { font-size: 2.5rem; display: block; }
+  .mode-card h3 { font-size: 1.05rem; font-weight: 900; margin-top: 6px; }
+  .mode-card p { font-size: .78rem; font-weight: 700; color: #4a6280; margin-top: 4px; }
+
+  /* ---------- hra ---------- */
+  #game { display: none; width: 100%; max-width: 760px; margin-top: 20px; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+  .chip {
+    font-family: inherit; font-weight: 800; font-size: .82rem;
+    border: 2px solid #fff; background: rgba(255,255,255,.6); color: var(--ink);
+    border-radius: 999px; padding: 6px 13px; cursor: pointer;
+  }
+  .chip.active { background: var(--accent2); border-color: var(--accent2); color: #fff; }
+
+  #qcard {
+    background: var(--card); border-radius: 24px;
+    box-shadow: 0 10px 28px rgba(29,53,87,.22);
+    padding: 26px 22px; margin-top: 14px; text-align: center;
+    position: relative; overflow: hidden;
+  }
+  #qtitle { font-weight: 900; font-size: 1rem; color: #4a6280; }
+  #objects { font-size: 2.2rem; line-height: 1.5; margin-top: 12px; word-spacing: 6px; max-width: 560px; margin-left: auto; margin-right: auto; }
+  #expr { font-size: clamp(2rem, 8vw, 3.2rem); font-weight: 900; margin-top: 12px; letter-spacing: 2px; }
+  #expr .ans {
+    display: inline-block; min-width: 1.6em; border-bottom: 5px dotted var(--accent2);
+    color: var(--accent2); padding: 0 6px;
+  }
+  #compare-row { display: none; justify-content: center; align-items: center; gap: 18px; margin-top: 14px; flex-wrap: wrap; }
+  #compare-row .side { background: #eef5fc; border-radius: 18px; padding: 14px 20px; min-width: 130px; }
+  #compare-row .num { font-size: 2.6rem; font-weight: 900; }
+  #compare-row .dots { font-size: 1.2rem; margin-top: 4px; word-spacing: 4px; max-width: 180px; }
+  #compare-row .q { font-size: 2.4rem; font-weight: 900; color: var(--accent2); }
+
+  #choices { display: none; justify-content: center; gap: 14px; margin-top: 20px; flex-wrap: wrap; }
+  #choices button {
+    font-family: inherit; font-weight: 900; font-size: 1.9rem;
+    background: #eef5fc; color: var(--ink); border: 3px solid #c3d6ea;
+    border-radius: 18px; padding: 14px 28px; cursor: pointer; min-width: 96px;
+    transition: transform .12s;
+  }
+  #choices button:hover { transform: scale(1.07); border-color: var(--accent2); }
+
+  #numpad { display: none; margin: 18px auto 0; max-width: 280px; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  #numpad button {
+    font-family: inherit; font-weight: 900; font-size: 1.5rem;
+    background: #eef5fc; border: 2px solid #d3e2f1; color: var(--ink);
+    border-radius: 14px; padding: 14px 0; cursor: pointer;
+  }
+  #numpad button:active { background: #d5e8fb; }
+  #numpad .ok { background: var(--good); border-color: var(--good); color: #fff; }
+  #numpad .del { background: #ffe4e4; }
+
+  #feedback { min-height: 40px; margin-top: 16px; font-weight: 900; font-size: 1.15rem; }
+  #feedback.good { color: var(--good); }
+  #feedback.bad { color: var(--bad); }
+  #next {
+    display: none; font-family: inherit; font-weight: 900; font-size: 1.05rem;
+    background: var(--accent); color: #fff; border: none; border-radius: 14px;
+    padding: 12px 26px; margin-top: 10px; cursor: pointer;
+  }
+
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
+  .shake { animation: shake .3s; }
+  @keyframes pop { 0%{transform:scale(.4);opacity:0} 70%{transform:scale(1.15)} 100%{transform:scale(1);opacity:1} }
+  .pop { animation: pop .35s; }
+
+  .confetti {
+    position: fixed; font-size: 1.7rem; pointer-events: none; z-index: 50;
+    animation: fly 1.1s ease-out forwards;
+  }
+  @keyframes fly {
+    0% { transform: translateY(0) scale(.6) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(-140px) scale(1.4) rotate(40deg); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" title="Zpět na rozcestník">🏠</a>
+  <button class="nav" id="btn-back" style="display:none">← Zpět</button>
+  <h1>🧮 Matematika</h1>
+  <div class="spacer"></div>
+  <div class="stats">
+    <span>⭐ <b id="stat-stars">0</b></span>
+    <span>🔥 <b id="stat-streak">0</b></span>
+  </div>
+</header>
+
+<div id="who">
+  <button class="kid tobik" data-kid="tobik">
+    <span class="face">👦</span>
+    <h2>Tobík</h2>
+    <p>Sčítání a odčítání do 100, násobilka, dělení i velký mix</p>
+  </button>
+  <button class="kid timca" data-kid="timca">
+    <span class="face">👧</span>
+    <h2>Timča</h2>
+    <p>Počítání obrázků, větší–menší a počítání do 10</p>
+  </button>
+</div>
+
+<div id="modes">
+  <h2 id="modes-title"></h2>
+  <div class="mode-grid" id="mode-grid"></div>
+</div>
+
+<div id="game">
+  <div class="chips" id="chips"></div>
+  <div id="qcard">
+    <div id="qtitle"></div>
+    <div id="objects"></div>
+    <div id="expr"></div>
+    <div id="compare-row">
+      <div class="side"><div class="num" id="cmp-a"></div><div class="dots" id="cmp-da"></div></div>
+      <div class="q">?</div>
+      <div class="side"><div class="num" id="cmp-b"></div><div class="dots" id="cmp-db"></div></div>
+    </div>
+    <div id="choices"></div>
+    <div id="numpad"></div>
+    <div id="feedback"></div>
+    <button id="next">Další ➜</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  const $ = id => document.getElementById(id);
+  const rnd = n => Math.floor(Math.random() * n);
+  const pick = a => a[rnd(a.length)];
+  const EMOJIS = ["🍎", "🍓", "🚗", "⚽", "🐞", "🌼", "🎈", "🦆", "🍪", "⭐", "🐟", "🧸"];
+
+  // ---------- definice režimů ----------
+  // Timča: vše jednoduché, max do 10, odpovědi výběrem
+  // Tobík: psaní výsledku na číselníku, 2–3 čísla v příkladu, mix všeho
+  const KIDS = {
+    timca: {
+      title: "👧 Timča – vyber si hru",
+      modes: {
+        count:   { emoji: "🍎", name: "Počítání",      desc: "Spočítej obrázky" },
+        compare: { emoji: "⚖️", name: "Větší – menší", desc: "Doplň znaménko" },
+        addT:    { emoji: "➕", name: "Sčítání",        desc: "Sčítej do 10" },
+        subT:    { emoji: "➖", name: "Odčítání",       desc: "Odčítej do 10" }
+      }
+    },
+    tobik: {
+      title: "👦 Tobík – vyber si hru",
+      modes: {
+        add: { emoji: "➕", name: "Sčítání",   desc: "I tři čísla najednou", chips: [["do 20", 20], ["do 100", 100]], def: 1 },
+        sub: { emoji: "➖", name: "Odčítání",  desc: "I tři čísla najednou", chips: [["do 20", 20], ["do 100", 100]], def: 1 },
+        mul: { emoji: "✖️", name: "Násobení", desc: "Řada × čísla až do 100", chips: [["2",2],["3",3],["4",4],["5",5],["6",6],["7",7],["8",8],["9",9],["10",10],["Mix",0]], def: 0 },
+        div: { emoji: "➗", name: "Dělení",    desc: "Beze zbytku",          chips: [["2",2],["3",3],["4",4],["5",5],["6",6],["7",7],["8",8],["9",9],["10",10],["Mix",0]], def: 0 },
+        mix: { emoji: "🎲", name: "Velký mix", desc: "Všechno dohromady!" }
+      }
+    }
+  };
+
+  // ---------- stav ----------
+  const store = JSON.parse(localStorage.getItem("tt-math") || '{"stars":0}');
+  let kid = null, mode = null, setting = null, q = null, tries = 0, locked = false, typed = "", streak = 0;
+
+  function save() { localStorage.setItem("tt-math", JSON.stringify(store)); }
+  function renderStats() {
+    $("stat-stars").textContent = store.stars;
+    $("stat-streak").textContent = streak;
+  }
+
+  function confetti() {
+    const emo = ["🎉", "⭐", "✨", "🎊", "🌟"];
+    const r = $("qcard").getBoundingClientRect();
+    for (let i = 0; i < 8; i++) {
+      const s = document.createElement("span");
+      s.className = "confetti";
+      s.textContent = pick(emo);
+      s.style.left = (r.left + r.width / 2 + (Math.random() - 0.5) * r.width * 0.7) + "px";
+      s.style.top = (r.top + r.height / 2) + "px";
+      s.style.animationDelay = (Math.random() * 0.25) + "s";
+      document.body.appendChild(s);
+      setTimeout(() => s.remove(), 1600);
+    }
+  }
+
+  // ---------- navigace ----------
+  function show(screen) {
+    $("who").style.display = screen === "who" ? "flex" : "none";
+    $("modes").style.display = screen === "modes" ? "block" : "none";
+    $("game").style.display = screen === "game" ? "block" : "none";
+    $("btn-back").style.display = screen === "who" ? "none" : "inline-block";
+    // barva pozadí: rozcestník zelený, Tobík modrý, Timča růžová
+    document.body.className = screen === "who" ? "" : "k-" + kid;
+  }
+
+  document.querySelectorAll(".kid").forEach(b => {
+    b.onclick = () => openKid(b.dataset.kid);
+  });
+
+  function openKid(k) {
+    kid = k;
+    $("modes-title").textContent = KIDS[k].title;
+    const grid = $("mode-grid");
+    grid.innerHTML = "";
+    for (const [key, m] of Object.entries(KIDS[k].modes)) {
+      const b = document.createElement("button");
+      b.className = "mode-card";
+      b.innerHTML = `<span class="emoji">${m.emoji}</span><h3>${m.name}</h3><p>${m.desc}</p>`;
+      b.onclick = () => startMode(key);
+      grid.appendChild(b);
+    }
+    show("modes");
+  }
+
+  $("btn-back").onclick = () => {
+    if ($("game").style.display !== "none") show("modes");
+    else show("who");
+  };
+
+  function startMode(key) {
+    mode = key;
+    const m = KIDS[kid].modes[key];
+    const chips = $("chips");
+    chips.innerHTML = "";
+    if (m.chips) {
+      m.chips.forEach(([label, val], i) => {
+        const c = document.createElement("button");
+        c.className = "chip" + (i === m.def ? " active" : "");
+        c.textContent = label;
+        c.onclick = () => {
+          chips.querySelectorAll(".chip").forEach(x => x.classList.remove("active"));
+          c.classList.add("active");
+          setting = val;
+          nextQuestion();
+        };
+        chips.appendChild(c);
+      });
+      setting = m.chips[m.def][1];
+    } else {
+      setting = null;
+    }
+    show("game");
+    nextQuestion();
+  }
+
+  // ---------- generátory ----------
+  function distractors(ans, min, max) {
+    const opts = new Set([ans]);
+    let guard = 0;
+    while (opts.size < 3 && guard++ < 100) {
+      const o = ans + (rnd(7) - 3);
+      if (o !== ans && o >= min && o <= max) opts.add(o);
+    }
+    while (opts.size < 3) opts.add(opts.size + max + 1); // nouzovka, nemělo by nastat
+    return [...opts].sort((a, b) => a - b);
+  }
+
+  function genAdd(range, allow3) {
+    const three = allow3 && Math.random() < 0.45;
+    if (three) {
+      const a = 1 + rnd(range - 2);
+      const b = 1 + rnd(range - 1 - a);
+      const c = 1 + rnd(range - a - b);
+      return { title: "Sečti", expr: a + " + " + b + " + " + c + " = ", answer: a + b + c };
+    }
+    const a = 1 + rnd(range - 1);
+    const b = 1 + rnd(range - a);
+    return { title: "Sečti", expr: a + " + " + b + " = ", answer: a + b };
+  }
+
+  function genSub(range, allow3) {
+    const three = allow3 && Math.random() < 0.45;
+    const a = 1 + rnd(range);
+    if (three) {
+      const b = rnd(a + 1);
+      const c = rnd(a - b + 1);
+      return { title: "Odečti", expr: a + " − " + b + " − " + c + " = ", answer: a - b - c };
+    }
+    const b = rnd(a + 1);
+    return { title: "Odečti", expr: a + " − " + b + " = ", answer: a - b };
+  }
+
+  function genMul(table) {
+    // jeden činitel 0–10 (vybraná řada, v mixu náhodně), druhý 0–100
+    const small = table || rnd(11);
+    const big = rnd(101);
+    const [x, y] = Math.random() < 0.5 ? [small, big] : [big, small];
+    return { title: "Vynásob", expr: x + " × " + y + " = ", answer: x * y };
+  }
+
+  function genDiv(table) {
+    const d = table || 2 + rnd(9);
+    const qt = 1 + rnd(10);
+    return { title: "Vyděl", expr: (d * qt) + " ÷ " + d + " = ", answer: qt };
+  }
+
+  function genQuestion() {
+    // Timča – výběr ze tří možností
+    if (mode === "count") {
+      const n = 1 + rnd(10);
+      return { title: "Kolik jich tady je?", objects: Array(n).fill(pick(EMOJIS)).join(" "), answer: n, options: distractors(n, 1, 10) };
+    }
+    if (mode === "compare") {
+      let a = rnd(11), b = rnd(11);
+      if (Math.random() < 0.25) b = a;
+      return { title: "Které znaménko tam patří?", cmp: [a, b], answer: a < b ? "<" : a > b ? ">" : "=", options: ["<", "=", ">"] };
+    }
+    if (mode === "addT") {
+      const g = genAdd(10, false);
+      g.options = distractors(g.answer, 0, 10);
+      return g;
+    }
+    if (mode === "subT") {
+      const g = genSub(10, false);
+      g.options = distractors(g.answer, 0, 10);
+      return g;
+    }
+    // Tobík – psaní na číselníku
+    if (mode === "add") return genAdd(setting, true);
+    if (mode === "sub") return genSub(setting, true);
+    if (mode === "mul") return genMul(setting);
+    if (mode === "div") return genDiv(setting);
+    if (mode === "mix") {
+      const which = pick(["add", "sub", "mul", "div"]);
+      if (which === "add") return genAdd(100, true);
+      if (which === "sub") return genSub(100, true);
+      if (which === "mul") return genMul(0);
+      return genDiv(0);
+    }
+  }
+
+  function nextQuestion() {
+    q = genQuestion();
+    tries = 0; locked = false; typed = "";
+    $("qtitle").textContent = q.title;
+    $("feedback").textContent = ""; $("feedback").className = "";
+    $("next").style.display = "none";
+    $("objects").textContent = q.objects || "";
+    $("expr").innerHTML = (q.expr && !q.options) ? q.expr + '<span class="ans" id="typed">?</span>' : (q.expr || "");
+    $("compare-row").style.display = q.cmp ? "flex" : "none";
+    if (q.cmp) {
+      $("cmp-a").textContent = q.cmp[0];
+      $("cmp-b").textContent = q.cmp[1];
+      // kuličky po pěti na řádek, ať nepřetékají z rámečku
+      const dots = n => { const rows = []; for (let i = 0; i < n; i += 5) rows.push("🔵".repeat(Math.min(5, n - i))); return rows.join("<br>"); };
+      $("cmp-da").innerHTML = dots(q.cmp[0]);
+      $("cmp-db").innerHTML = dots(q.cmp[1]);
+    }
+    const ch = $("choices");
+    if (q.options) {
+      ch.style.display = "flex";
+      ch.innerHTML = "";
+      q.options.forEach(o => {
+        const b = document.createElement("button");
+        b.textContent = o;
+        b.onclick = () => answer(o);
+        ch.appendChild(b);
+      });
+    } else {
+      ch.style.display = "none";
+    }
+    $("numpad").style.display = (q.expr && !q.options) ? "grid" : "none";
+    $("qcard").classList.remove("pop");
+    void $("qcard").offsetWidth;
+    $("qcard").classList.add("pop");
+  }
+
+  // ---------- číselník ----------
+  const pad = $("numpad");
+  ["1","2","3","4","5","6","7","8","9","⌫","0","OK"].forEach(k => {
+    const b = document.createElement("button");
+    b.textContent = k;
+    if (k === "OK") b.className = "ok";
+    if (k === "⌫") b.className = "del";
+    b.onclick = () => padPress(k);
+    pad.appendChild(b);
+  });
+  function padPress(k) {
+    if (locked || !q || !q.expr || q.options) return;
+    if (k === "OK") { if (typed !== "") answer(parseInt(typed, 10)); return; }
+    if (k === "⌫") typed = typed.slice(0, -1);
+    else if (typed.length < 4) typed += k;
+    const el = $("typed");
+    if (el) el.textContent = typed === "" ? "?" : typed;
+  }
+  document.addEventListener("keydown", e => {
+    if ($("game").style.display === "none") return;
+    if (e.key >= "0" && e.key <= "9") padPress(e.key);
+    if (e.key === "Backspace") padPress("⌫");
+    if (e.key === "Enter") padPress("OK");
+  });
+
+  // ---------- vyhodnocení ----------
+  function answer(val) {
+    if (locked || !q) return;
+    if (val === q.answer) {
+      locked = true;
+      streak++;
+      store.stars++;
+      save();
+      renderStats();
+      $("feedback").textContent = pick(["Výborně! 🎉", "Super! ⭐", "Paráda! 👏", "Přesně tak! 🌟", "Jsi šikula! 💪"]);
+      $("feedback").className = "good";
+      const el = $("typed");
+      if (el) el.textContent = q.answer;
+      confetti();
+      setTimeout(nextQuestion, 1300);
+    } else {
+      tries++;
+      streak = 0;
+      renderStats();
+      $("qcard").classList.remove("shake");
+      void $("qcard").offsetWidth;
+      $("qcard").classList.add("shake");
+      if (tries >= 2) {
+        locked = true;
+        $("feedback").textContent = "Správně je to " + q.answer + ". Příště to dáš!";
+        $("feedback").className = "bad";
+        const el = $("typed");
+        if (el) el.textContent = q.answer;
+        $("next").style.display = "inline-block";
+      } else {
+        $("feedback").textContent = "Zkus to ještě jednou! 🙂";
+        $("feedback").className = "bad";
+        typed = "";
+        const el = $("typed");
+        if (el) el.textContent = "?";
+      }
+    }
+  }
+
+  $("next").onclick = nextQuestion;
+  renderStats();
+  show("who");
+})();
+</script>
+</body>
+</html>
