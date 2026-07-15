@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Angličtina – Tobík a Timča</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1d3557;
+    --accent: #ff8c42;
+    --accent2: #3d7dd8;
+    --good: #2e9e63;
+    --bad: #e05555;
+    --card: #ffffff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    min-height: 100vh;
+    font-family: 'Nunito', sans-serif;
+    color: var(--ink);
+    /* rozcestník angličtiny = světle zelená */
+    background: linear-gradient(180deg, #b5e6bd 0%, #d8f3dc 45%, #f0fbf2 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 18px 16px 40px;
+  }
+  body.k-tobik { background: linear-gradient(180deg, #aed6fa 0%, #d2e8fd 45%, #eef7ff 100%); }
+  body.k-timca { background: linear-gradient(180deg, #fac4da 0%, #fde0ec 45%, #fff4f9 100%); }
+
+  header {
+    width: 100%; max-width: 760px;
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  }
+  header a, header button.nav {
+    text-decoration: none; color: var(--ink); font-weight: 900;
+    background: #fff; padding: 8px 14px; border-radius: 999px; border: none;
+    box-shadow: 0 2px 8px rgba(29,53,87,.2); font-size: .9rem;
+    cursor: pointer; font-family: inherit;
+  }
+  header h1 { font-size: 1.5rem; font-weight: 900; }
+  .spacer { flex: 1; }
+  .stats { display: flex; gap: 12px; font-weight: 900; font-size: 1rem; }
+  .stats span b { color: #fff; background: var(--accent); border-radius: 999px; padding: 2px 10px; }
+
+  /* ---------- výběr dítěte ---------- */
+  #who { margin-top: 60px; display: flex; gap: 28px; flex-wrap: wrap; justify-content: center; }
+  .kid {
+    font-family: inherit; cursor: pointer;
+    width: 260px; padding: 40px 20px; text-align: center;
+    background: var(--card); border-radius: 28px; border: 4px solid transparent;
+    box-shadow: 0 12px 30px rgba(29,53,87,.25);
+    transition: transform .18s;
+  }
+  .kid:hover { transform: translateY(-8px) scale(1.04); }
+  .kid .face { font-size: 4.6rem; display: block; }
+  .kid h2 { font-size: 1.8rem; font-weight: 900; margin-top: 10px; }
+  .kid p { font-size: .9rem; font-weight: 700; color: #4a6280; margin-top: 6px; }
+  .kid.tobik { border-color: #3d7dd8; }
+  .kid.timca { border-color: #e884b0; }
+
+  /* ---------- výběr režimu ---------- */
+  #modes { display: none; margin-top: 26px; width: 100%; max-width: 760px; }
+  #modes h2 { text-align: center; font-weight: 900; font-size: 1.3rem; }
+  .mode-grid { margin-top: 16px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+  .mode-card {
+    background: var(--card); border: 3px solid transparent; border-radius: 20px;
+    padding: 20px 14px; text-align: center; cursor: pointer;
+    box-shadow: 0 6px 18px rgba(29,53,87,.18);
+    transition: transform .15s;
+    font-family: inherit; color: var(--ink);
+  }
+  .mode-card:hover { transform: translateY(-4px); border-color: var(--accent2); }
+  .mode-card .emoji { font-size: 2.5rem; display: block; }
+  .mode-card h3 { font-size: 1.05rem; font-weight: 900; margin-top: 6px; }
+  .mode-card p { font-size: .78rem; font-weight: 700; color: #4a6280; margin-top: 4px; }
+
+  /* ---------- hra ---------- */
+  #game { display: none; width: 100%; max-width: 760px; margin-top: 20px; }
+  #qcard {
+    background: var(--card); border-radius: 24px;
+    box-shadow: 0 10px 28px rgba(29,53,87,.22);
+    padding: 26px 22px; text-align: center;
+    position: relative; overflow: hidden;
+  }
+  #qtitle { font-weight: 900; font-size: 1rem; color: #4a6280; }
+  #big-visual { font-size: 5rem; margin-top: 10px; min-height: 0; }
+  #big-word { font-size: clamp(2rem, 7vw, 3rem); font-weight: 900; letter-spacing: 3px; margin-top: 8px; }
+  #cz-word { font-size: 1.3rem; font-weight: 800; color: #4a6280; margin-top: 4px; }
+  #btn-speak {
+    font-family: inherit; font-weight: 900; font-size: 1.15rem;
+    background: var(--accent2); color: #fff; border: none; border-radius: 999px;
+    padding: 12px 26px; margin-top: 14px; cursor: pointer;
+    box-shadow: 0 4px 12px rgba(61,125,216,.4);
+    transition: transform .12s;
+  }
+  #btn-speak:active { transform: scale(.94); }
+
+  #choices { display: flex; justify-content: center; gap: 14px; margin-top: 20px; flex-wrap: wrap; }
+  #choices button {
+    font-family: inherit; font-weight: 900; font-size: 1.5rem;
+    background: #f4f9fe; color: var(--ink); border: 3px solid #c3d6ea;
+    border-radius: 18px; padding: 14px 24px; cursor: pointer; min-width: 96px;
+    transition: transform .12s;
+  }
+  #choices button:hover { transform: scale(1.07); border-color: var(--accent2); }
+  #choices button.emoji-opt { font-size: 2.8rem; }
+  #choices .swatch {
+    width: 82px; height: 82px; border-radius: 20px; min-width: 0; padding: 0;
+    border: 4px solid rgba(29,53,87,.25);
+  }
+
+  #answer-row { display: none; justify-content: center; gap: 8px; margin-top: 18px; }
+  #answer {
+    font-family: inherit; font-size: 1.3rem; font-weight: 800; text-transform: lowercase;
+    padding: 10px 14px; border: 3px solid #c3d6ea; border-radius: 14px; outline: none;
+    width: min(280px, 60vw); text-align: center;
+  }
+  #answer:focus { border-color: var(--accent2); }
+  #submit {
+    background: var(--good); color: #fff; border: none; border-radius: 14px;
+    font-family: inherit; font-weight: 900; font-size: 1.1rem; padding: 10px 22px; cursor: pointer;
+  }
+
+  #feedback { min-height: 40px; margin-top: 16px; font-weight: 900; font-size: 1.15rem; }
+  #feedback.good { color: var(--good); }
+  #feedback.bad { color: var(--bad); }
+  #next {
+    display: none; font-family: inherit; font-weight: 900; font-size: 1.05rem;
+    background: var(--accent); color: #fff; border: none; border-radius: 14px;
+    padding: 12px 26px; margin-top: 10px; cursor: pointer;
+  }
+
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
+  .shake { animation: shake .3s; }
+  @keyframes pop { 0%{transform:scale(.4);opacity:0} 70%{transform:scale(1.15)} 100%{transform:scale(1);opacity:1} }
+  .pop { animation: pop .35s; }
+  .confetti {
+    position: fixed; font-size: 1.7rem; pointer-events: none; z-index: 50;
+    animation: fly 1.1s ease-out forwards;
+  }
+  @keyframes fly {
+    0% { transform: translateY(0) scale(.6) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(-140px) scale(1.4) rotate(40deg); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" title="Zpět na rozcestník">🏠</a>
+  <button class="nav" id="btn-back" style="display:none">← Zpět</button>
+  <h1><img src="https://flagcdn.com/w80/gb.png" alt="GB" style="height:1.1em;border-radius:4px;vertical-align:-0.15em;box-shadow:0 1px 4px rgba(0,0,0,.3)"> Angličtina</h1>
+  <div class="spacer"></div>
+  <div class="stats">
+    <span>⭐ <b id="stat-stars">0</b></span>
+    <span>🔥 <b id="stat-streak">0</b></span>
+  </div>
+</header>
+
+<div id="who">
+  <button class="kid tobik" data-kid="tobik">
+    <span class="face">👦</span>
+    <h2>Tobík</h2>
+    <p>Poslech, překlady a psaní slovíček</p>
+  </button>
+  <button class="kid timca" data-kid="timca">
+    <span class="face">👧</span>
+    <h2>Timča</h2>
+    <p>Barvy, čísla a zvířátka s poslechem</p>
+  </button>
+</div>
+
+<div id="modes">
+  <h2 id="modes-title"></h2>
+  <div class="mode-grid" id="mode-grid"></div>
+</div>
+
+<div id="game">
+  <div id="qcard">
+    <div id="qtitle"></div>
+    <div id="big-visual"></div>
+    <div id="big-word"></div>
+    <div id="cz-word"></div>
+    <button id="btn-speak">🔊 Přehrát</button>
+    <div id="choices"></div>
+    <div id="answer-row">
+      <input id="answer" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="napiš anglicky…">
+      <button id="submit">OK</button>
+    </div>
+    <div id="feedback"></div>
+    <button id="next">Další ➜</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  const $ = id => document.getElementById(id);
+  const rnd = n => Math.floor(Math.random() * n);
+  const pick = a => a[rnd(a.length)];
+  const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+
+  // ---------- slovníček: en, cz, obrázek/hodnota, kategorie ----------
+  const WORDS = [
+    // zvířata
+    { en: "dog", cz: "pes", e: "🐶", cat: "animal" },
+    { en: "cat", cz: "kočka", e: "🐱", cat: "animal" },
+    { en: "fish", cz: "ryba", e: "🐟", cat: "animal" },
+    { en: "bird", cz: "pták", e: "🐦", cat: "animal" },
+    { en: "horse", cz: "kůň", e: "🐴", cat: "animal" },
+    { en: "cow", cz: "kráva", e: "🐮", cat: "animal" },
+    { en: "pig", cz: "prase", e: "🐷", cat: "animal" },
+    { en: "sheep", cz: "ovce", e: "🐑", cat: "animal" },
+    { en: "duck", cz: "kachna", e: "🦆", cat: "animal" },
+    { en: "lion", cz: "lev", e: "🦁", cat: "animal" },
+    { en: "elephant", cz: "slon", e: "🐘", cat: "animal" },
+    { en: "monkey", cz: "opice", e: "🐵", cat: "animal" },
+    { en: "bear", cz: "medvěd", e: "🐻", cat: "animal" },
+    { en: "mouse", cz: "myš", e: "🐭", cat: "animal" },
+    { en: "frog", cz: "žába", e: "🐸", cat: "animal" },
+    { en: "rabbit", cz: "králík", e: "🐰", cat: "animal" },
+    { en: "tiger", cz: "tygr", e: "🐯", cat: "animal" },
+    { en: "snake", cz: "had", e: "🐍", cat: "animal" },
+    { en: "bee", cz: "včela", e: "🐝", cat: "animal" },
+    { en: "butterfly", cz: "motýl", e: "🦋", cat: "animal" },
+    // barvy (hex pro barevné čtverečky)
+    { en: "red", cz: "červená", hex: "#e53935", cat: "color" },
+    { en: "blue", cz: "modrá", hex: "#1e88e5", cat: "color" },
+    { en: "green", cz: "zelená", hex: "#43a047", cat: "color" },
+    { en: "yellow", cz: "žlutá", hex: "#fdd835", cat: "color" },
+    { en: "orange", cz: "oranžová", hex: "#fb8c00", cat: "color" },
+    { en: "purple", cz: "fialová", hex: "#8e24aa", cat: "color" },
+    { en: "pink", cz: "růžová", hex: "#f06292", cat: "color" },
+    { en: "black", cz: "černá", hex: "#212121", cat: "color" },
+    { en: "white", cz: "bílá", hex: "#fafafa", cat: "color" },
+    { en: "brown", cz: "hnědá", hex: "#795548", cat: "color" },
+    // čísla
+    { en: "one", cz: "jedna", num: 1, cat: "number" },
+    { en: "two", cz: "dva", num: 2, cat: "number" },
+    { en: "three", cz: "tři", num: 3, cat: "number" },
+    { en: "four", cz: "čtyři", num: 4, cat: "number" },
+    { en: "five", cz: "pět", num: 5, cat: "number" },
+    { en: "six", cz: "šest", num: 6, cat: "number" },
+    { en: "seven", cz: "sedm", num: 7, cat: "number" },
+    { en: "eight", cz: "osm", num: 8, cat: "number" },
+    { en: "nine", cz: "devět", num: 9, cat: "number" },
+    { en: "ten", cz: "deset", num: 10, cat: "number" },
+    { en: "eleven", cz: "jedenáct", num: 11, cat: "number" },
+    { en: "twelve", cz: "dvanáct", num: 12, cat: "number" },
+    // jídlo
+    { en: "apple", cz: "jablko", e: "🍎", cat: "food" },
+    { en: "banana", cz: "banán", e: "🍌", cat: "food" },
+    { en: "bread", cz: "chléb", e: "🍞", cat: "food" },
+    { en: "milk", cz: "mléko", e: "🥛", cat: "food" },
+    { en: "egg", cz: "vejce", e: "🥚", cat: "food" },
+    { en: "cheese", cz: "sýr", e: "🧀", cat: "food" },
+    { en: "cake", cz: "dort", e: "🎂", cat: "food" },
+    { en: "ice cream", cz: "zmrzlina", e: "🍦", cat: "food" },
+    { en: "strawberry", cz: "jahoda", e: "🍓", cat: "food" },
+    { en: "pizza", cz: "pizza", e: "🍕", cat: "food" },
+    { en: "water", cz: "voda", e: "💧", cat: "food" },
+    { en: "carrot", cz: "mrkev", e: "🥕", cat: "food" },
+    // věci a svět
+    { en: "book", cz: "kniha", e: "📖", cat: "thing" },
+    { en: "car", cz: "auto", e: "🚗", cat: "thing" },
+    { en: "house", cz: "dům", e: "🏠", cat: "thing" },
+    { en: "ball", cz: "míč", e: "⚽", cat: "thing" },
+    { en: "sun", cz: "slunce", e: "☀️", cat: "thing" },
+    { en: "moon", cz: "měsíc", e: "🌙", cat: "thing" },
+    { en: "star", cz: "hvězda", e: "⭐", cat: "thing" },
+    { en: "tree", cz: "strom", e: "🌳", cat: "thing" },
+    { en: "flower", cz: "květina", e: "🌸", cat: "thing" },
+    { en: "train", cz: "vlak", e: "🚂", cat: "thing" },
+    { en: "plane", cz: "letadlo", e: "✈️", cat: "thing" },
+    { en: "boat", cz: "loď", e: "⛵", cat: "thing" },
+    { en: "key", cz: "klíč", e: "🔑", cat: "thing" },
+    { en: "clock", cz: "hodiny", e: "🕐", cat: "thing" },
+    { en: "pencil", cz: "tužka", e: "✏️", cat: "thing" },
+    { en: "school", cz: "škola", e: "🏫", cat: "thing" },
+    { en: "rain", cz: "déšť", e: "🌧️", cat: "thing" },
+    { en: "snow", cz: "sníh", e: "❄️", cat: "thing" },
+    // tělo
+    { en: "hand", cz: "ruka", e: "✋", cat: "body" },
+    { en: "eye", cz: "oko", e: "👁️", cat: "body" },
+    { en: "nose", cz: "nos", e: "👃", cat: "body" },
+    { en: "mouth", cz: "pusa", e: "👄", cat: "body" },
+    { en: "ear", cz: "ucho", e: "👂", cat: "body" },
+    { en: "leg", cz: "noha", e: "🦵", cat: "body" },
+    { en: "tooth", cz: "zub", e: "🦷", cat: "body" }
+  ];
+  const TOBIK_POOL = WORDS.filter(w => w.e); // pro obrázkové režimy Tobíka
+
+  const SENTENCES = [
+    { en: "The dog is big.", cz: "Pes je velký." },
+    { en: "The cat is small.", cz: "Kočka je malá." },
+    { en: "I like pizza.", cz: "Mám rád pizzu." },
+    { en: "I have a red ball.", cz: "Mám červený míč." },
+    { en: "The sun is yellow.", cz: "Slunce je žluté." },
+    { en: "The car is fast.", cz: "Auto je rychlé." },
+    { en: "I see a bird.", cz: "Vidím ptáka." },
+    { en: "The apple is green.", cz: "Jablko je zelené." },
+    { en: "I drink milk.", cz: "Piju mléko." },
+    { en: "The house is white.", cz: "Dům je bílý." },
+    { en: "I read a book.", cz: "Čtu knihu." },
+    { en: "The fish is in the water.", cz: "Ryba je ve vodě." },
+    { en: "I go to school.", cz: "Jdu do školy." },
+    { en: "The moon is in the sky.", cz: "Měsíc je na obloze." },
+    { en: "I eat bread and cheese.", cz: "Jím chléb a sýr." },
+    { en: "The frog is green.", cz: "Žába je zelená." },
+    { en: "My mum is nice.", cz: "Moje máma je milá." },
+    { en: "I have one sister.", cz: "Mám jednu sestru." },
+    { en: "The elephant is very big.", cz: "Slon je moc velký." },
+    { en: "I like ice cream.", cz: "Mám rád zmrzlinu." },
+    { en: "The train is long.", cz: "Vlak je dlouhý." },
+    { en: "It is raining.", cz: "Prší." },
+    { en: "The snow is cold.", cz: "Sníh je studený." },
+    { en: "I play with a ball.", cz: "Hraju si s míčem." },
+    { en: "The bear sleeps in winter.", cz: "Medvěd v zimě spí." },
+    { en: "I can swim.", cz: "Umím plavat." },
+    { en: "The bee likes flowers.", cz: "Včela má ráda květiny." },
+    { en: "My dad has a blue car.", cz: "Můj táta má modré auto." }
+  ];
+
+  const AUDIO_ALT = {
+    "butterfly": "En-au-butterfly.ogg",
+    "black": "En-uk-black.ogg",
+    "house": "En-uk-house.ogg",
+    "orange": "En-uk-orange.ogg",
+    "pink": "En-uk-pink.ogg",
+    "school": "En-uk-school.ogg"
+  };
+  const recordingUrl = en => "https://commons.wikimedia.org/wiki/Special:FilePath/" +
+    encodeURIComponent(AUDIO_ALT[en] || ("En-us-" + en + ".ogg"));
+  const audioCache = {};
+
+  let voice = null;
+  function pickVoice() {
+    const vs = (window.speechSynthesis ? speechSynthesis.getVoices() : []).filter(v => v.lang && v.lang.startsWith("en"));
+    voice = vs.find(v => /natural/i.test(v.name))
+         || vs.find(v => /google/i.test(v.name))
+         || vs.find(v => v.lang === "en-GB")
+         || vs[0] || null;
+  }
+  if (window.speechSynthesis) {
+    pickVoice();
+    speechSynthesis.onvoiceschanged = pickVoice;
+  }
+  function ttsSpeak(text) {
+    if (!window.speechSynthesis) return;
+    try {
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = voice ? voice.lang : "en-GB";
+      if (voice) u.voice = voice;
+      u.rate = 0.85;
+      speechSynthesis.speak(u);
+    } catch (e) {}
+  }
+  function speak(en, isSentence) {
+    if (isSentence) { ttsSpeak(en); return; }
+    let a = audioCache[en];
+    if (a === "tts") { ttsSpeak(en); return; }
+    if (!a) {
+      a = audioCache[en] = new Audio(recordingUrl(en));
+      a.onerror = () => { audioCache[en] = "tts"; ttsSpeak(en); };
+    }
+    try {
+      a.currentTime = 0;
+      a.play().catch(() => ttsSpeak(en));
+    } catch (e) { ttsSpeak(en); }
+  }
+
+  // ---------- režimy ----------
+  const KIDS = {
+    timca: {
+      title: "👧 Timča – vyber si hru",
+      modes: {
+        colors:  { emoji: "🎨", name: "Barvy", desc: "Poslechni si barvu a najdi ji" },
+        numbers: { emoji: "🔢", name: "Čísla", desc: "Poslechni si číslo a vyber ho" },
+        animals: { emoji: "🐾", name: "Zvířátka", desc: "Poslechni si zvíře a najdi ho" }
+      }
+    },
+    tobik: {
+      title: "👦 Tobík – vyber si hru",
+      modes: {
+        listen: { emoji: "🎧", name: "Poslech", desc: "Poslouchej a najdi správný obrázek" },
+        encz:   { emoji: "📖", name: "Anglicky → česky", desc: "Přečti slovo a vyber překlad" },
+        czen:   { emoji: "<img src='https://flagcdn.com/w80/cz.png' alt='CZ' style='height:44px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,.3)'>", name: "Česky → anglicky", desc: "Vyber anglické slovíčko" },
+        write:  { emoji: "✍️", name: "Napiš slovo", desc: "Napiš slovíčko anglicky" },
+        sent:   { emoji: "📝", name: "Věty", desc: "Přečti větu a vyber překlad" }
+      }
+    }
+  };
+
+  // ---------- stav ----------
+  const store = JSON.parse(localStorage.getItem("tt-anglictina") || '{"stars":0}');
+  let kid = null, mode = null, q = null, tries = 0, locked = false, streak = 0;
+
+  function save() { localStorage.setItem("tt-anglictina", JSON.stringify(store)); }
+  function renderStats() {
+    $("stat-stars").textContent = store.stars;
+    $("stat-streak").textContent = streak;
+  }
+  function confetti() {
+    const emo = ["🎉", "⭐", "✨", "🎊", "🌟"];
+    const r = $("qcard").getBoundingClientRect();
+    for (let i = 0; i < 8; i++) {
+      const s = document.createElement("span");
+      s.className = "confetti";
+      s.textContent = pick(emo);
+      s.style.left = (r.left + r.width / 2 + (Math.random() - 0.5) * r.width * 0.7) + "px";
+      s.style.top = (r.top + r.height / 2) + "px";
+      s.style.animationDelay = (Math.random() * 0.25) + "s";
+      document.body.appendChild(s);
+      setTimeout(() => s.remove(), 1600);
+    }
+  }
+
+  // ---------- navigace ----------
+  function show(screen) {
+    $("who").style.display = screen === "who" ? "flex" : "none";
+    $("modes").style.display = screen === "modes" ? "block" : "none";
+    $("game").style.display = screen === "game" ? "block" : "none";
+    $("btn-back").style.display = screen === "who" ? "none" : "inline-block";
+    document.body.className = screen === "who" ? "" : "k-" + kid;
+  }
+  document.querySelectorAll(".kid").forEach(b => { b.onclick = () => openKid(b.dataset.kid); });
+  function openKid(k) {
+    kid = k;
+    $("modes-title").textContent = KIDS[k].title;
+    const grid = $("mode-grid");
+    grid.innerHTML = "";
+    for (const [key, m] of Object.entries(KIDS[k].modes)) {
+      const b = document.createElement("button");
+      b.className = "mode-card";
+      b.innerHTML = `<span class="emoji">${m.emoji}</span><h3>${m.name}</h3><p>${m.desc}</p>`;
+      b.onclick = () => { mode = key; show("game"); nextQuestion(); };
+      grid.appendChild(b);
+    }
+    show("modes");
+  }
+  $("btn-back").onclick = () => {
+    if ($("game").style.display !== "none") show("modes");
+    else show("who");
+  };
+
+  // ---------- pomocníci ----------
+  function sample(pool, n, first) {
+    const out = [first];
+    let guard = 0;
+    while (out.length < n && guard++ < 200) {
+      const o = pick(pool);
+      if (!out.some(x => x.en === o.en)) out.push(o);
+    }
+    return shuffle(out);
+  }
+
+  // ---------- otázky ----------
+  function genQuestion() {
+    if (mode === "colors")  { const pool = WORDS.filter(w => w.cat === "color");  const w = pick(pool); return { w, opts: sample(pool, 4, w), kind: "swatch" }; }
+    if (mode === "numbers") { const pool = WORDS.filter(w => w.cat === "number" && w.num <= 10); const w = pick(pool); return { w, opts: sample(pool, 4, w), kind: "num" }; }
+    if (mode === "animals") { const pool = WORDS.filter(w => w.cat === "animal"); const w = pick(pool); return { w, opts: sample(pool, 4, w), kind: "emoji" }; }
+    if (mode === "listen")  { const w = pick(TOBIK_POOL); return { w, opts: sample(TOBIK_POOL, 4, w), kind: "emoji" }; }
+    if (mode === "encz")    { const w = pick(WORDS); return { w, opts: sample(WORDS, 4, w), kind: "cz" }; }
+    if (mode === "czen")    { const w = pick(WORDS); return { w, opts: sample(WORDS, 4, w), kind: "en" }; }
+    if (mode === "write")   { const w = pick(TOBIK_POOL.filter(x => !x.en.includes(" "))); return { w, kind: "write" }; }
+    if (mode === "sent")    { const w = pick(SENTENCES); return { w, opts: sample(SENTENCES, 4, w), kind: "sent" }; }
+  }
+
+  function visualFor(w, big) {
+    if (w.hex) return `<span style="display:inline-block;width:${big ? 90 : 60}px;height:${big ? 90 : 60}px;border-radius:22px;background:${w.hex};border:4px solid rgba(29,53,87,.25)"></span>`;
+    if (w.num) return `<span style="font-weight:900">${w.num}</span>`;
+    return w.e || "";
+  }
+
+  function nextQuestion() {
+    q = genQuestion();
+    tries = 0; locked = false;
+    $("feedback").textContent = ""; $("feedback").className = "";
+    $("next").style.display = "none";
+    $("answer-row").style.display = "none";
+    $("big-visual").innerHTML = "";
+    $("big-word").textContent = "";
+    $("cz-word").textContent = "";
+    const ch = $("choices");
+    ch.style.display = "flex";
+    ch.innerHTML = "";
+
+    const timcaMode = mode === "colors" || mode === "numbers" || mode === "animals";
+
+    if (timcaMode) {
+      // Timča: slyší a vidí anglické slovo, vybírá obrázek/barvu/číslo
+      $("qtitle").textContent = "Poslechni si slovíčko a vyber, co znamená!";
+      $("big-word").textContent = q.w.en.toUpperCase();
+      buildVisualChoices(q.opts);
+      speak(q.w.en);
+    } else if (mode === "listen") {
+      // Tobík: jen slyší, slovo se neukazuje
+      $("qtitle").textContent = "Poslouchej! Které slovo jsi slyšel?";
+      $("big-visual").textContent = "🎧";
+      buildVisualChoices(q.opts);
+      speak(q.w.en);
+    } else if (mode === "encz") {
+      $("qtitle").textContent = "Co znamená tohle slovo?";
+      $("big-word").textContent = q.w.en;
+      q.opts.forEach(o => addChoice(o.cz, () => answer(o.en), "text"));
+      speak(q.w.en);
+    } else if (mode === "czen") {
+      $("qtitle").textContent = "Jak se to řekne anglicky?";
+      $("big-visual").innerHTML = visualFor(q.w, true);
+      $("cz-word").textContent = q.w.cz;
+      q.opts.forEach(o => addChoice(o.en, () => answer(o.en), "text"));
+    } else if (mode === "write") {
+      $("qtitle").textContent = "Napiš slovíčko anglicky!";
+      $("big-visual").innerHTML = visualFor(q.w, true);
+      $("cz-word").textContent = q.w.cz;
+      ch.style.display = "none";
+      $("answer-row").style.display = "flex";
+      $("answer").value = "";
+      speak(q.w.en);
+      setTimeout(() => $("answer").focus(), 100);
+    } else if (mode === "sent") {
+      $("qtitle").textContent = "Přečti větu. Co znamená?";
+      $("big-word").textContent = q.w.en;
+      $("big-word").style.fontSize = "1.7rem";
+      $("big-word").style.letterSpacing = "1px";
+      q.opts.forEach(o => addChoice(o.cz, () => answer(o.en), "text"));
+      $("choices").querySelectorAll("button").forEach(b => { b.style.fontSize = "1.05rem"; b.style.minWidth = "0"; });
+    }
+    if (mode !== "sent") {
+      $("big-word").style.fontSize = "";
+      $("big-word").style.letterSpacing = "";
+    }
+
+    $("qcard").classList.remove("pop");
+    void $("qcard").offsetWidth;
+    $("qcard").classList.add("pop");
+  }
+
+  function buildVisualChoices(opts) {
+    opts.forEach(o => {
+      if (o.hex) {
+        const b = document.createElement("button");
+        b.className = "swatch";
+        b.style.background = o.hex;
+        b.title = "";
+        b.onclick = () => answer(o.en);
+        $("choices").appendChild(b);
+      } else if (o.num) {
+        addChoice(String(o.num), () => answer(o.en), "text");
+      } else {
+        addChoice(o.e, () => answer(o.en), "emoji");
+      }
+    });
+  }
+
+  function addChoice(label, fn, kind) {
+    const b = document.createElement("button");
+    b.textContent = label;
+    if (kind === "emoji") b.className = "emoji-opt";
+    b.onclick = fn;
+    $("choices").appendChild(b);
+    return b;
+  }
+
+  $("btn-speak").onclick = () => { if (q) speak(q.w.en, mode === "sent"); };
+
+  // ---------- psaní ----------
+  const norm = s => s.toLowerCase().replace(/[^a-z]/g, "");
+  function lev1(a, b) {
+    if (a === b) return true;
+    if (Math.abs(a.length - b.length) > 1) return false;
+    let i = 0, j = 0, edits = 0;
+    while (i < a.length && j < b.length) {
+      if (a[i] === b[j]) { i++; j++; continue; }
+      if (++edits > 1) return false;
+      if (a.length > b.length) i++;
+      else if (b.length > a.length) j++;
+      else { i++; j++; }
+    }
+    return edits + (a.length - i) + (b.length - j) <= 1;
+  }
+  function checkWrite() {
+    if (locked || !q || mode !== "write") return;
+    const val = norm($("answer").value);
+    if (!val) return;
+    const target = norm(q.w.en);
+    const ok = target.length > 3 ? lev1(val, target) : val === target;
+    if (ok) { $("answer").value = q.w.en; success(); }
+    else wrong();
+  }
+  $("submit").onclick = checkWrite;
+  $("answer").addEventListener("keydown", e => { if (e.key === "Enter") checkWrite(); });
+
+  // ---------- vyhodnocení ----------
+  function success() {
+    locked = true;
+    streak++;
+    store.stars++;
+    save();
+    renderStats();
+    $("feedback").textContent = pick(["Well done! 🎉", "Great! ⭐", "Super! 👏", "Excellent! 🌟", "Perfect! 💪"]);
+    $("feedback").className = "good";
+    // ukaž kompletní odpověď a přehraj výslovnost
+    if (mode === "sent") {
+      $("cz-word").textContent = q.w.cz;
+    } else {
+      $("big-word").textContent = q.w.en.toUpperCase();
+      if (mode === "listen" || mode === "encz") $("big-visual").innerHTML = visualFor(q.w, true);
+      if (mode === "encz") $("cz-word").textContent = q.w.cz;
+      speak(q.w.en);
+    }
+    confetti();
+    setTimeout(nextQuestion, 1700);
+  }
+
+  function wrong() {
+    tries++;
+    streak = 0;
+    renderStats();
+    $("qcard").classList.remove("shake");
+    void $("qcard").offsetWidth;
+    $("qcard").classList.add("shake");
+    if (tries >= 2) {
+      locked = true;
+      $("feedback").textContent = mode === "sent"
+        ? "Správně je: " + q.w.cz
+        : "Správně je: " + q.w.en + " (" + q.w.cz + ")";
+      $("feedback").className = "bad";
+      if (mode === "write") $("answer").value = q.w.en;
+      if (mode !== "sent") speak(q.w.en);
+      $("next").style.display = "inline-block";
+    } else {
+      $("feedback").textContent = "Zkus to ještě jednou! 🙂";
+      $("feedback").className = "bad";
+      if (mode === "write") $("answer").select();
+    }
+  }
+
+  function answer(en) {
+    if (locked || !q) return;
+    if (en === q.w.en) success();
+    else wrong();
+  }
+
+  $("next").onclick = nextQuestion;
+  renderStats();
+  show("who");
+})();
+</script>
+</body>
+</html>
