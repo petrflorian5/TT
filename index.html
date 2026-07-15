@@ -651,7 +651,7 @@
   }
 
   // ---------- psaní hlavního města ----------
-  const norm = s => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "");
+  const norm = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]/g, "");
   function lev1(a, b) { // levenshtein <= 1
     if (a === b) return true;
     if (Math.abs(a.length - b.length) > 1) return false;
