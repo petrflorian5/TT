@@ -59,6 +59,17 @@
   .regions .btn { font-size: .78rem; padding: 5px 10px; }
   .regions .btn.active { background: var(--accent2); color: #fff; }
   .spacer { flex: 1; }
+  #basemap-toggle {
+    margin-left: 22px;
+    background: #fff;
+    border: 2px solid #ccd5df;
+    position: relative;
+  }
+  #basemap-toggle::before {
+    content: "";
+    position: absolute; left: -13px; top: 4px; bottom: 4px;
+    border-left: 2px solid #dde3e9;
+  }
   .stats {
     display: flex; gap: 10px; align-items: center;
     font-weight: 800; font-size: .9rem; white-space: nowrap;
