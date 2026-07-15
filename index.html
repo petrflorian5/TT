@@ -287,6 +287,9 @@
   // detailní dlaždice NASA GIBS – při přiblížení doostří satelitní podklad
   // (EPSG:4326 dlaždice lícují s equirectangular projekcí bez přepočtu)
   const gTiles = g.insert("g", () => gCountries.node());
+  // okrajové dlaždice GIBS přesahují ±180°/±90° výplní – ořízneme na hranice světa
+  const worldClipRect = svg.append("clipPath").attr("id", "worldClip").append("rect");
+  gTiles.attr("clip-path", "url(#worldClip)");
   const TILE_MAX_Z = 7;
   const tileUrl = (z, r, c) => "https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/BlueMarble_NextGeneration/default/500m/" + z + "/" + r + "/" + c + ".jpeg";
   let tileTimer = null;
@@ -301,11 +304,13 @@
     const lat0 = Math.max(-90, Math.min(tl[1], br[1])), lat1 = Math.min(90, Math.max(tl[1], br[1]));
     // úroveň detailu podle skutečné šířky světa na obrazovce
     const worldPx = (projection([180, 0])[0] - projection([-180, 0])[0]) * t.k;
-    const z = Math.max(0, Math.min(TILE_MAX_Z, Math.ceil(Math.log2(Math.max(1, worldPx / 1024)))));
+    const z = Math.max(0, Math.min(TILE_MAX_Z, Math.ceil(Math.log2(Math.max(1, worldPx / 640)))));
     if (z < 3) { gTiles.selectAll("*").remove(); return; } // stačí základní snímek
-    const deg = 180 / Math.pow(2, z);
-    const c0 = Math.max(0, Math.floor((lon0 + 180) / deg)), c1 = Math.min(2 * Math.pow(2, z) - 1, Math.floor((lon1 + 180) / deg));
-    const r0 = Math.max(0, Math.floor((90 - lat1) / deg)), r1 = Math.min(Math.pow(2, z) - 1, Math.floor((90 - lat0) / deg));
+    // mřížka GIBS (dle WMTS capabilities): dlaždice na úrovni z pokrývá 288/2^z stupňů
+    const deg = 288 / Math.pow(2, z);
+    const maxC = Math.ceil(360 / deg) - 1, maxR = Math.ceil(180 / deg) - 1;
+    const c0 = Math.max(0, Math.floor((lon0 + 180) / deg)), c1 = Math.min(maxC, Math.floor((lon1 + 180) / deg));
+    const r0 = Math.max(0, Math.floor((90 - lat1) / deg)), r1 = Math.min(maxR, Math.floor((90 - lat0) / deg));
     if ((c1 - c0 + 1) * (r1 - r0 + 1) > 48) return; // pojistka proti záplavě požadavků
     const want = new Set();
     for (let r = r0; r <= r1; r++) for (let c = c0; c <= c1; c++) want.add(z + "/" + r + "/" + c);
@@ -339,6 +344,8 @@
       satImg.attr("x", tl[0]).attr("y", tl[1])
         .attr("width", br[0] - tl[0]).attr("height", br[1] - tl[1])
         .style("display", null);
+      worldClipRect.attr("x", tl[0]).attr("y", tl[1])
+        .attr("width", br[0] - tl[0]).attr("height", br[1] - tl[1]);
       if (!satImg.attr("href")) satImg.attr("href", SAT_URL);
     } else {
       satImg.style("display", "none");
